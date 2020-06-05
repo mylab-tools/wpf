@@ -24,7 +24,8 @@ namespace MyLab.Wpf
         public static Type RetrieveVmTypeWrapper(Type originVmType)
         {
             var wrapperTypeName = CreateWrapperTypeName(originVmType.FullName);
-            return ModuleBuilder.GetType(wrapperTypeName) ?? CreateWrapperType(wrapperTypeName, originVmType);
+            return ModuleBuilder.Assembly.GetType(wrapperTypeName.Replace("+", "\\+")) 
+                   ?? CreateWrapperType(wrapperTypeName, originVmType);
         }
 
         private static Type CreateWrapperType(string wrapperTypeName, Type originVmType)

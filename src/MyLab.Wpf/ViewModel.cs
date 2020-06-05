@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using System.Windows.Documents;
 using MyLab.Wpf.SequenceCalling;
@@ -58,6 +59,27 @@ namespace MyLab.Wpf
             return (T)Activator.CreateInstance(wrapperType, ctorArgs);
         }
 
+        public static object Create(Type viewModelType, params object[] ctorArgs)
+        {
+            if (viewModelType == null) 
+                throw new ArgumentNullException(nameof(viewModelType));
+            if(!typeof(ViewModel).IsAssignableFrom(viewModelType)) 
+                throw new ArgumentException( $"Type '{viewModelType}' is not ViewModel", nameof(viewModelType));
+
+            var wrapperType = ViewModelTypeWrapperBuilder.RetrieveVmTypeWrapper(viewModelType);
+
+            return Activator.CreateInstance(wrapperType, ctorArgs);
+        }
+
+        public static T Create<T>(Expression<Func<T>> createExpr) where T : ViewModel
+        {
+            if (createExpr == null) throw new ArgumentNullException(nameof(createExpr));
+
+            var val = ViewModelExpressionValueProvidingTools.GetValue(createExpr.Body);
+
+            return (T)val;
+        }
+
         protected void RegisterCommand(VmCommand cmd)
         {
             _commands.Add(cmd);
@@ -69,6 +91,37 @@ namespace MyLab.Wpf
 
             foreach (var cmd in _commands)
                 cmd.OnCanExecuteChanged();
+        }
+
+        protected void UpdateStates()
+        {
+            foreach (var cmd in _commands)
+                cmd.OnCanExecuteChanged();
+        }
+
+        protected ViewModelTail CreateTail()
+        {
+            return new ViewModelTail(this);
+        }
+
+        public class ViewModelTail
+        {
+            private readonly ViewModel _viewModel;
+
+            public void PropertyChanged(string propertyName)
+            {
+                _viewModel.OnPropertyChanged(propertyName);
+            }
+
+            public void UpdateStates()
+            {
+                _viewModel.UpdateStates();
+            }
+
+            internal ViewModelTail(ViewModel viewModel)
+            {
+                _viewModel = viewModel;
+            }
         }
     }
 }
