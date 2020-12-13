@@ -19,7 +19,7 @@ namespace MyLab.Wpf
             IGuiManager guiMgr, 
             IMainVmProvider mainVmProvider, 
             Application application,
-            IViewToViewModelMap viewToViewModelMap)
+            IViewToViewModelMap viewToViewModelMap = null)
         {
             _sp = sp;
             _guiMgr = guiMgr;
