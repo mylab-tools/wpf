@@ -38,6 +38,21 @@ namespace MyLab.Wpf
             _viewTypeMap.Register(typeof(TView), typeof(TViewModel));
         }
 
+        public void BindViewToVm(ViewBinding binding)
+        {
+            if (binding == null) throw new ArgumentNullException(nameof(binding));
+            if(binding.View == null)
+                throw new InvalidOperationException("View type is null");
+            if (binding.ViewModel == null)
+                throw new InvalidOperationException("ViewModel type is null");
+            if (!typeof(Control).IsAssignableFrom(binding.View))
+                throw new InvalidOperationException($"The type {binding.View.FullName} is not inheritor of {typeof(Control).FullName}");
+            if (!typeof(ViewModel).IsAssignableFrom(binding.ViewModel))
+                throw new InvalidOperationException($"The type {binding.ViewModel.FullName} is not inheritor of {typeof(ViewModel).FullName}");
+
+            _viewTypeMap.Register(binding.View, binding.ViewModel);
+        }
+
         public void InitApplication([NotNull] Application application, [NotNull] DialogVm mainVm)
         {
             if (application == null) throw new ArgumentNullException(nameof(application));

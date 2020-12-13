@@ -11,6 +11,8 @@ namespace MyLab.Wpf
             where TView : Control, new()
             where TViewModel : ViewModel;
 
+        void BindViewToVm(ViewBinding binding);
+
         void InitApplication(Application application, DialogVm mainVm);
 
         void CloseApplication();
