@@ -20,6 +20,28 @@ namespace MyLab.Wpf
         TViewModel Create<TViewModel>(Expression<Func<TViewModel>> createExpr) where TViewModel : ViewModel;
     }
 
+    public class DesignTimeViewModelFactory : IViewModelFactory
+    {
+        public TViewModel Create<TViewModel>() where TViewModel : ViewModel
+        {
+            var wrapperType = ViewModelTypeWrapperBuilder.RetrieveVmTypeWrapper(typeof(TViewModel));
+
+            return (TViewModel)Activator.CreateInstance(wrapperType);
+        }
+
+        public TViewModel Create<TViewModel>(Expression<Func<TViewModel>> createExpr) where TViewModel : ViewModel
+        {
+            if (createExpr == null) throw new ArgumentNullException(nameof(createExpr));
+
+            var wrapperType = ViewModelTypeWrapperBuilder.RetrieveVmTypeWrapper(typeof(TViewModel));
+
+            var expr = FactoryExpressionTypeReplacer.Replace(createExpr, wrapperType);
+
+            return (TViewModel)ExpressionValueProvidingTools.GetValue(expr.Body);
+        }
+    }
+
+
     class CoreViewModelFactory : IViewModelFactory
     {
         private readonly IServiceProvider _serviceProvider;
