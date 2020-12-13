@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Documents;
 using MyLab.Wpf.SequenceCalling;
 
@@ -46,38 +47,11 @@ namespace MyLab.Wpf
         public TVm CreateChild<TVm>(params object[] ctorArgs)
             where TVm : ViewModel
         {
-            var d = Create<TVm>(ctorArgs);
-            d.Owner = this;
+            throw new NotImplementedException();
+            //var d = Create<TVm>(ctorArgs);
+            //d.Owner = this;
 
-            return d;
-        }
-
-        public static T Create<T>(params object[] ctorArgs) where T : ViewModel
-        {
-            var wrapperType = ViewModelTypeWrapperBuilder.RetrieveVmTypeWrapper(typeof(T));
-
-            return (T)Activator.CreateInstance(wrapperType, ctorArgs);
-        }
-
-        public static object Create(Type viewModelType, params object[] ctorArgs)
-        {
-            if (viewModelType == null) 
-                throw new ArgumentNullException(nameof(viewModelType));
-            if(!typeof(ViewModel).IsAssignableFrom(viewModelType)) 
-                throw new ArgumentException( $"Type '{viewModelType}' is not ViewModel", nameof(viewModelType));
-
-            var wrapperType = ViewModelTypeWrapperBuilder.RetrieveVmTypeWrapper(viewModelType);
-
-            return Activator.CreateInstance(wrapperType, ctorArgs);
-        }
-
-        public static T Create<T>(Expression<Func<T>> createExpr) where T : ViewModel
-        {
-            if (createExpr == null) throw new ArgumentNullException(nameof(createExpr));
-
-            var val = ViewModelExpressionValueProvidingTools.GetValue(createExpr.Body);
-
-            return (T)val;
+            //return d;
         }
 
         protected void RegisterCommand(VmCommand cmd)

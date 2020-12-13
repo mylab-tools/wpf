@@ -7,20 +7,10 @@ namespace MyLab.Wpf
 {
     static class ViewModelTypeWrapperBuilder
     {
-        private static readonly AssemblyBuilder AssemblyBuilder;
-        private static readonly ModuleBuilder ModuleBuilder;
-        private static readonly MethodInfo PropChangeMethod;
-
-        /// <summary>
-        /// Initializes a new instance of <see cref="ViewModelTypeWrapperBuilder"/>
-        /// </summary>
-        static ViewModelTypeWrapperBuilder()
-        {
-            AssemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("ViewModelLib"), AssemblyBuilderAccess.Run);
-            ModuleBuilder = AssemblyBuilder.DefineDynamicModule("ViewModelModule");
-            PropChangeMethod = typeof(ViewModel).GetMethod("OnPropertyChanged", BindingFlags.Instance | BindingFlags.NonPublic);
-        }
-
+        private static readonly AssemblyBuilder AssemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("ViewModelLib"), AssemblyBuilderAccess.Run);
+        private static readonly ModuleBuilder ModuleBuilder = AssemblyBuilder.DefineDynamicModule("ViewModelModule");
+        private static readonly MethodInfo PropChangeMethod = typeof(ViewModel).GetMethod("OnPropertyChanged", BindingFlags.Instance | BindingFlags.NonPublic);
+        
         public static Type RetrieveVmTypeWrapper(Type originVmType)
         {
             var wrapperTypeName = CreateWrapperTypeName(originVmType.FullName);
@@ -49,8 +39,6 @@ namespace MyLab.Wpf
                 WrapProperty(tb, p);
 
             var tRes=  tb.CreateType();
-
-            //AssemblyBuilder.Save("ViewModelLib.dll");
 
             return tRes;
         }

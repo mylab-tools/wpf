@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 
 namespace MyLab.Wpf
 {
-    static class ViewModelExpressionValueProvidingTools
+    static class ExpressionValueProvidingTools
     {
         private static readonly IExpressionValueProvider[] ValueProviders =
         {
@@ -41,7 +39,7 @@ namespace MyLab.Wpf
         public object GetValue(Expression expression)
         {
             var lambda = (LambdaExpression) expression;
-            return ViewModelExpressionValueProvidingTools.GetValue(lambda.Body);
+            return ExpressionValueProvidingTools.GetValue(lambda.Body);
         }
     }
 
@@ -55,7 +53,7 @@ namespace MyLab.Wpf
         public object GetValue(Expression expression)
         {
             var uExpr = (UnaryExpression)expression;
-            return ViewModelExpressionValueProvidingTools.GetValue(uExpr.Operand);
+            return ExpressionValueProvidingTools.GetValue(uExpr.Operand);
         }
     }
 
@@ -90,7 +88,7 @@ namespace MyLab.Wpf
         {
             var ma = (MemberExpression)expression;
 
-            var targetObject = ViewModelExpressionValueProvidingTools.GetValue(ma.Expression);
+            var targetObject = ExpressionValueProvidingTools.GetValue(ma.Expression);
 
             switch (ma.Member.MemberType)
             {
@@ -118,7 +116,7 @@ namespace MyLab.Wpf
             var call = ((MethodCallExpression)expression);
 
             var targetObject = call.Object != null
-                ? ViewModelExpressionValueProvidingTools.GetValue(call.Object)
+                ? ExpressionValueProvidingTools.GetValue(call.Object)
                 : null;
 
             var parameters = call.Method.GetParameters();
@@ -141,7 +139,7 @@ namespace MyLab.Wpf
                         }
                     }
 
-                    return ViewModelExpressionValueProvidingTools.GetValue(expr);
+                    return ExpressionValueProvidingTools.GetValue(expr);
                 })
                 .ToArray();
 
@@ -160,9 +158,7 @@ namespace MyLab.Wpf
         {
             var ne = (NewExpression)expression;
 
-            return typeof(ViewModel).IsAssignableFrom(ne.Type) 
-                ? ViewModel.Create(ne.Type, ne.Arguments.Select(ViewModelExpressionValueProvidingTools.GetValue).ToArray())
-                : ne.Constructor.Invoke(ne.Arguments.Select(ViewModelExpressionValueProvidingTools.GetValue).ToArray()); 
+            return ne.Constructor.Invoke(ne.Arguments.Select(ExpressionValueProvidingTools.GetValue).ToArray()); 
         }
     }
 
@@ -177,7 +173,7 @@ namespace MyLab.Wpf
         {
             var mi = (MemberInitExpression)expression;
 
-            var obj = ViewModelExpressionValueProvidingTools.GetValue(mi.NewExpression);
+            var obj = ExpressionValueProvidingTools.GetValue(mi.NewExpression);
             foreach (var memberBinding in mi.Bindings)
             {
                 switch (memberBinding.BindingType)
@@ -185,7 +181,7 @@ namespace MyLab.Wpf
                     case MemberBindingType.Assignment:
                     {
                         var ma = (MemberAssignment)memberBinding;
-                        var memberValue = ViewModelExpressionValueProvidingTools.GetValue(ma.Expression);
+                        var memberValue = ExpressionValueProvidingTools.GetValue(ma.Expression);
 
                         switch (memberBinding.Member.MemberType)
                         {
@@ -216,7 +212,7 @@ namespace MyLab.Wpf
                                 {
                                     lbInitializer.AddMethod.Invoke(propertyVal,
                                         lbInitializer.Arguments
-                                            .Select(ViewModelExpressionValueProvidingTools.GetValue)
+                                            .Select(ExpressionValueProvidingTools.GetValue)
                                             .ToArray());
                                 }
                             } 
