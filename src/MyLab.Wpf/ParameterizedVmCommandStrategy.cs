@@ -11,7 +11,7 @@ namespace MyLab.Wpf
         /// <summary>
         /// Initializes a new instance of <see cref="ParameterizedVmCommandStrategy{T}"/>
         /// </summary>
-        public ParameterizedVmCommandStrategy([NotNull] Action<T> act, Func<T, bool> predicate)
+        public ParameterizedVmCommandStrategy( Action<T> act, Func<T, bool> predicate)
         {
             _act = act ?? throw new ArgumentNullException(nameof(act));
             _predicate = predicate;

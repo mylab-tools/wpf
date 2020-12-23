@@ -17,7 +17,7 @@ namespace MyLab.Wpf
                 {
                     var initialMemberInitExpr = (MemberInitExpression)factoryFunc.Body;
 
-                    var newExpr = Expression.New(GetNewCtor(initialMemberInitExpr.NewExpression.Constructor, newType), factoryFunc.Parameters);
+                    var newExpr = Expression.New(GetNewCtor(initialMemberInitExpr.NewExpression.Constructor, newType), initialMemberInitExpr.NewExpression.Arguments);
 
                     var memberInitExpr = Expression.MemberInit(newExpr, initialMemberInitExpr.Bindings);
 

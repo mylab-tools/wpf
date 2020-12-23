@@ -9,7 +9,7 @@ namespace MyLab.Wpf
     {
         private readonly IDictionary<ViewModel, Window> _vmToControlMap = new Dictionary<ViewModel, Window>();
 
-        public void Register([NotNull] Window window)
+        public void Register( Window window)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
             var dc = window.DataContext;
@@ -44,7 +44,7 @@ namespace MyLab.Wpf
             };
         }
 
-        public void Unregister([NotNull] Window window)
+        public void Unregister( Window window)
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
             var dc = window.DataContext;

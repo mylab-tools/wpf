@@ -1,7 +1,6 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 
-namespace MyLab.Wpf
+namespace MyLab.Wpf.Converters
 {
     /// <summary>
     /// Gets default title
@@ -10,6 +9,7 @@ namespace MyLab.Wpf
     {
         protected override string Convert(ViewModel source, object parameter)
         {
+            if (source == null) return "[none]";
             var name = source.GetType().Assembly.GetName();
 
             var sb = new StringBuilder();

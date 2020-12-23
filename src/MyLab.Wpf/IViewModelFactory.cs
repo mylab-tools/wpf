@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using Microsoft.Extensions.DependencyInjection;
+using MyLab.ExpressionTools;
 
 namespace MyLab.Wpf
 {
@@ -37,7 +38,7 @@ namespace MyLab.Wpf
 
             var expr = FactoryExpressionTypeReplacer.Replace(createExpr, wrapperType);
 
-            return (TViewModel)ExpressionValueProvidingTools.GetValue(expr.Body);
+            return expr.Body.GetValue<TViewModel>();
         }
     }
 
@@ -69,7 +70,7 @@ namespace MyLab.Wpf
 
             var expr = FactoryExpressionTypeReplacer.Replace(createExpr, wrapperType);
 
-            return (TViewModel) ExpressionValueProvidingTools.GetValue(expr.Body);
+            return expr.Body.GetValue<TViewModel>();
         }
     }
 }

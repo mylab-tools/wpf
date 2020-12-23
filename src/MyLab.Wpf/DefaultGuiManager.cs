@@ -53,7 +53,7 @@ namespace MyLab.Wpf
             _viewTypeMap.Register(binding.View, binding.ViewModel);
         }
 
-        public void InitApplication([NotNull] Application application, [NotNull] DialogVm mainVm)
+        public void InitApplication( Application application,  DialogVm mainVm)
         {
             if (application == null) throw new ArgumentNullException(nameof(application));
             _mainVm = mainVm ?? throw new ArgumentNullException(nameof(mainVm));
@@ -64,7 +64,7 @@ namespace MyLab.Wpf
             InitBizScheduler();
         }
 
-        public bool? ShowDialog([NotNull] DialogVm viewModel)
+        public bool? ShowDialog( DialogVm viewModel)
         {
             var window = CreateWindowForVm(viewModel);
             _windowsRegistry.Register(window);
@@ -72,7 +72,7 @@ namespace MyLab.Wpf
             return window.ShowDialog();
         }
 
-        public void Show([NotNull] ViewModel viewModel)
+        public void Show( ViewModel viewModel)
         {
             var window = CreateWindowForVm(viewModel);
             _windowsRegistry.Register(window);

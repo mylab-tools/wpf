@@ -26,7 +26,7 @@ namespace MyLab.Wpf
         /// <summary>
         /// Initializes a new instance of <see cref="VmCommandBase"/>
         /// </summary>
-        protected VmCommandBase([NotNull] IVmCommandStrategy strategy)
+        protected VmCommandBase( IVmCommandStrategy strategy)
         {
             _strategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
         }

@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using System.Windows.Data;
 
-namespace MyLab.Wpf
+namespace MyLab.Wpf.Converters
 {
     /// <summary>
     /// The base class for value converters

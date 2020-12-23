@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace MyLab.Wpf
+namespace MyLab.Wpf.Converters
 {
     public class NullToVisibilityConverter : IValueConverter
     {
