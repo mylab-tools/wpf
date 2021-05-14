@@ -15,6 +15,10 @@
     {
         public IViewManager ViewManager { get; private set; }
 
+        public VmCommand OkCmd { get; private set; }
+        public VmCommand NoCmd { get; private set; }
+        public VmCommand CancelCmd { get; private set; }
+
         protected void ClosePositive()
         {
             ViewManager.CloseView(this, true);
@@ -53,10 +57,18 @@
         protected virtual void OnClosedNegativeCore() { }
         protected virtual void OnClosedCore() { }
 
+        protected virtual bool ValidatePositiveClosing() => true;
+        protected virtual bool ValidateNegativeClosing() => true;
+        protected virtual bool ValidateCancelClosing() => true;
+
         public override void Initialize(VmInitializationContext ctx)
         {
             base.Initialize(ctx);
             ViewManager = ctx.ViewManager;
+
+            OkCmd = new VmCommand(ClosePositive, ValidatePositiveClosing);
+            NoCmd = new VmCommand(CloseNegative, ValidateNegativeClosing);
+            CancelCmd = new VmCommand(CloseCancel, ValidateCancelClosing);
         }
     }
 }
