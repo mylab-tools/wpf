@@ -10,10 +10,19 @@ namespace MyLab.Wpf
         /// <summary>
         /// View type
         /// </summary>
-        public Type View { get; set; }
+        public Type View { get; }
         /// <summary>
         /// ViewModel type
         /// </summary>
-        public Type ViewModel { get; set; }
+        public Type ViewModel { get; }
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="ViewBinding"/>
+        /// </summary>
+        public ViewBinding(Type viewModel, Type view)
+        {
+            ViewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
+            View = view ?? throw new ArgumentNullException(nameof(view));
+        }
     }
 }

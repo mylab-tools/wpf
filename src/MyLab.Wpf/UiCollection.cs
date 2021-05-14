@@ -9,11 +9,11 @@ using System.Text;
 
 namespace MyLab.Wpf
 {
-    public class UiCollection<T> : INotifyPropertyChanged, INotifyCollectionChanged, IEnumerable<T>, ICollection<T>
+    public class UiCollection<T> : INotifyPropertyChanged, INotifyCollectionChanged, ICollection<T>
         where T : class
     {
 
-        private readonly ViewModel.ViewModelTail _viewModelTail;
+        private readonly IVmStateUpdater _ownerStateUpdater;
         private bool _isEmpty;
         private T _selectedItem;
         private bool _hasSelected;
@@ -72,7 +72,7 @@ namespace MyLab.Wpf
                         Source.Remove(_selectedItem);
                 }
 
-                _viewModelTail?.UpdateStates();
+                _ownerStateUpdater?.UpdateStates();
             }
         }
 
@@ -83,10 +83,10 @@ namespace MyLab.Wpf
             UpdateProperties();
         }
 
-        public UiCollection(ViewModel.ViewModelTail viewModelTail)
+        public UiCollection(IVmStateUpdater ownerStateUpdater)
             : this()
         {
-            _viewModelTail = viewModelTail;
+            _ownerStateUpdater = ownerStateUpdater;
         }
 
         public UiCollection()

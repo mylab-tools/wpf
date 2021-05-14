@@ -1,24 +1,41 @@
-﻿namespace MyLab.Wpf
-{
-    public static class GuiManagerExtension
-    {
-        public static void ShowError(this IViewManager gui, DialogVm ownerVm, string message, string hiddenMsg = null, string title = null)
-        {
-            var msgVm = ownerVm.CreateChild<ErrorMessageVm>();
-            msgVm.HiddenMessage = hiddenMsg;
-            msgVm.Message = message;
-            msgVm.Title = title ?? "Error";
+﻿using System;
 
-            gui.ShowDialog(msgVm);
+namespace MyLab.Wpf
+{
+    /// <summary>
+    /// Provides abilities to work with standard dialogs
+    /// </summary>
+    public class StandardDialogs
+    {
+        private readonly IVmFactory _vmFactory;
+        private readonly IDialogManager _dialogManager;
+        private readonly ViewModel _owner;
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="StandardDialogs"/>
+        /// </summary>
+        public StandardDialogs(IVmFactory vmFactory, IDialogManager dialogManager, ViewModel owner)
+        {
+            _vmFactory = vmFactory ?? throw new ArgumentNullException(nameof(vmFactory));
+            _dialogManager = dialogManager ?? throw new ArgumentNullException(nameof(dialogManager));
+            _owner = owner ?? throw new ArgumentNullException(nameof(owner));
         }
 
-        public static bool? ShowQuestion(this IViewManager gui, DialogVm ownerVm, string message, string title = null)
+        public void ShowError(string message, string hiddenMsg = null)
         {
-            var msgVm = ownerVm.CreateChild<QuestionMessageVm>();
+            var msgVm = _vmFactory.CreateChild<ErrorMessageVm>(_owner);
+            msgVm.HiddenMessage = hiddenMsg;
             msgVm.Message = message;
-            msgVm.Title = title ?? "Warning";
 
-            return gui.ShowDialog(msgVm);
+            _dialogManager.ShowDialog(msgVm);
+        }
+
+        public bool? ShowQuestion(string message, IDialogLogic logic)
+        {
+            var msgVm = _vmFactory.CreateChild(_owner, () => new QuestionMessageVm());
+            msgVm.Message = message;
+
+            return _dialogManager.ShowDialog(msgVm);
         }
     }
 }

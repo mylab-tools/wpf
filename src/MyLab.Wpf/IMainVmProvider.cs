@@ -44,7 +44,7 @@ namespace MyLab.Wpf
     {
         public DialogVm Provide(IServiceProvider sp)
         {
-            var vmFactory = sp.GetService<IViewModelFactory>();
+            var vmFactory = sp.GetService<IVmFactory>();
             return vmFactory.Create<TMainVm>();
         }
     }
@@ -67,7 +67,7 @@ namespace MyLab.Wpf
 
         public DialogVm Provide(IServiceProvider sp)
         {
-            var vmFactory = sp.GetService<IViewModelFactory>();
+            var vmFactory = sp.GetService<IVmFactory>();
             return vmFactory.Create<TMainVm>(_factoryExpr);
         }
     }

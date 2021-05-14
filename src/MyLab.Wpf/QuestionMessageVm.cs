@@ -2,16 +2,15 @@
 {
     public class QuestionMessageVm : DialogVm
     {
-        public virtual string Message { get; set; }
 
-        public virtual VmCommand Ok { get; }
+        public virtual string Message { get; set; }
 
         /// <summary>
         /// Initializes a new instance of <see cref="ErrorMessageVm"/>
         /// </summary>
-        public QuestionMessageVm()
+        public QuestionMessageVm(IDialogLogic logic, IDialogCloser closer)
+            :base(logic, closer)
         {
-            Ok = new VmCommand(() => ViewManager.CloseView(this, true));
         }
     }
 }

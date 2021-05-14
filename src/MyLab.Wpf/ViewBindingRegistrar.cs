@@ -22,11 +22,7 @@ namespace MyLab.Wpf
             where TView : Control, new()
             where TViewModel : ViewModel
         {
-            _bindings.Add(new ViewBinding
-            {
-                View = typeof(TView),
-                ViewModel = typeof(TViewModel)
-            });
+            _bindings.Add(new ViewBinding(typeof(TViewModel), typeof(TView)));
         }
     }
 }

@@ -9,37 +9,26 @@ namespace MyLab.Wpf
     class GuiAppStarterService : IHostedService
     {
         private readonly IServiceProvider _sp;
-        private readonly IGuiManager _guiMgr;
         private readonly IMainVmProvider _mainVmProvider;
         private readonly Application _application;
-        private readonly IViewToViewModelMap _viewToViewModelMap;
+        private DialogVm _mainVm;
 
         public GuiAppStarterService(
             IServiceProvider sp, 
-            IGuiManager guiMgr, 
             IMainVmProvider mainVmProvider, 
-            Application application,
-            IViewToViewModelMap viewToViewModelMap = null)
+            Application application)
         {
             _sp = sp;
-            _guiMgr = guiMgr;
             _mainVmProvider = mainVmProvider;
-            _application = application;
-            _viewToViewModelMap = viewToViewModelMap;
+            _application = application ?? throw new ArgumentNullException(nameof(application));
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            var mainVm = _mainVmProvider.Provide(_sp);
-            _guiMgr.InitApplication(_application, mainVm);
+            _mainVm = _mainVmProvider.Provide(_sp);
 
-            if (_viewToViewModelMap != null)
-            {
-                foreach (var binding in _viewToViewModelMap.GetBinds())
-                {
-                    _guiMgr.BindViewToVm(binding);
-                }
-            }
+            _application.Resources.Add("MainViewModel", _mainVm);
+            _application.Activated += OnApplicationActivated;
 
             return Task.CompletedTask;
         }
@@ -47,6 +36,16 @@ namespace MyLab.Wpf
         public Task StopAsync(CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
+        }
+
+        void OnApplicationActivated(object sender, EventArgs args)
+        {
+            _application.Activated -= OnApplicationActivated;
+
+            if (_application.MainWindow == null)
+                throw new InvalidOperationException("Main windows not found aster application activation");
+
+            _application.MainWindow.DataContext = _mainVm;
         }
     }
 }

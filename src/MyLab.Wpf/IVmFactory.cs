@@ -8,7 +8,7 @@ namespace MyLab.Wpf
     /// <summary>
     /// Creates view models
     /// </summary>
-    public interface IViewModelFactory
+    public interface IVmFactory
     {
         /// <summary>
         /// Creates instance of specified view model type
@@ -21,7 +21,40 @@ namespace MyLab.Wpf
         TViewModel Create<TViewModel>(Expression<Func<TViewModel>> createExpr) where TViewModel : ViewModel;
     }
 
-    public class DesignTimeViewModelFactory : IViewModelFactory
+    /// <summary>
+    /// Extensions for <see cref="IVmFactory"/>
+    /// </summary>
+    public static class VmFactoryExtensions
+    {
+        /// <summary>
+        /// Creates instance of specified view model type
+        /// </summary>
+        public static TViewModel CreateChild<TViewModel>(this IVmFactory vmFactory, ViewModel owner) where TViewModel : ViewModel
+        {
+            if (vmFactory == null) throw new ArgumentNullException(nameof(vmFactory));
+            if (owner == null) throw new ArgumentNullException(nameof(owner));
+
+            var child = vmFactory.Create<TViewModel>();
+            child.Owner = owner;
+            return child;
+        }
+
+        /// <summary>
+        /// Creates instance of specified view model type
+        /// </summary>
+        public static TViewModel CreateChild<TViewModel>(this IVmFactory vmFactory, ViewModel owner, Expression<Func<TViewModel>> createExpr)
+            where TViewModel : ViewModel
+        {
+            if (vmFactory == null) throw new ArgumentNullException(nameof(vmFactory));
+            if (owner == null) throw new ArgumentNullException(nameof(owner));
+
+            var child = vmFactory.Create(createExpr);
+            child.Owner = owner;
+            return child;
+        }
+    }
+
+    public class DesignTimeVmFactory : IVmFactory
     {
         public TViewModel Create<TViewModel>() where TViewModel : ViewModel
         {
@@ -43,14 +76,14 @@ namespace MyLab.Wpf
     }
 
 
-    class CoreViewModelFactory : IViewModelFactory
+    class CoreVmFactory : IVmFactory
     {
         private readonly IServiceProvider _serviceProvider;
 
         /// <summary>
-        /// Initializes a new instance of <see cref="CoreViewModelFactory"/>
+        /// Initializes a new instance of <see cref="CoreVmFactory"/>
         /// </summary>
-        public CoreViewModelFactory(IServiceProvider serviceProvider)
+        public CoreVmFactory(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }

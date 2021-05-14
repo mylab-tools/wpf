@@ -1,6 +1,6 @@
 ﻿namespace MyLab.Wpf
 {
-    public interface IVmCommandStrategy
+    public interface IVmCommandLogic
     {
         bool CanExecute(object parameter);
 

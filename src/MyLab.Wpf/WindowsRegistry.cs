@@ -20,25 +20,27 @@ namespace MyLab.Wpf
 
             _vmToControlMap.Add(dialogDc, window);
 
+            window.Closing += (sender, args) =>
+            {
+                var w = (Window)sender;
+                if (w.DataContext is DialogVm dialogVm)
+                {
+                    if (w.DialogResult == true)
+                    {
+                        if (!dialogVm.OkCmd.CanExecute(null))
+                            args.Cancel = true;
+                    }
+                    else
+                    {
+                        if (!dialogVm.CancelCmd.CanExecute(null))
+                            args.Cancel = true;
+                    }
+                }
+            };
+
             window.Closed += (sender, args) =>
             {
                 var w = (Window) sender;
-                if (w.DataContext is DialogVm dialogVm)
-                {
-                    switch (w.DialogResult)
-                    {
-                        case true:
-                            dialogVm.OnClosedPositive();
-                            break;
-                        case null:
-                            dialogVm.OnClosedCancel();
-                            break;
-                        default:
-                            dialogVm.OnClosedNegative();
-                            break;
-                    }
-                }
-
                 Unregister(w);
             };
         }

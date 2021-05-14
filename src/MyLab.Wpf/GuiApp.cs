@@ -11,21 +11,27 @@ namespace MyLab.Wpf
     /// </summary>
     public class GuiApp
     {
-        private readonly ServiceDescriptor _guiManagerServiceDescriptor;
         private readonly Application _app;
         private IAppServiceConfigurator _serviceConfigurator;
         private IAppConfigDescriptor _configDescriptor;
         
-        internal GuiApp(ServiceDescriptor guiManagerServiceDescriptor, Application app)
+        GuiApp(Application app)
         {
-            _guiManagerServiceDescriptor = guiManagerServiceDescriptor;
-            _app = app;
+            _app = app ?? throw new ArgumentNullException(nameof(app));
         }
 
         GuiApp(GuiApp initial)
         {
             _serviceConfigurator = initial._serviceConfigurator;
             _configDescriptor = initial._configDescriptor;
+            _app = initial._app;
+        }
+
+        public static GuiApp Create(Application app)
+        {
+            if (app == null) throw new ArgumentNullException(nameof(app));
+
+            return new GuiApp(app);
         }
 
         /// <summary>
@@ -93,8 +99,12 @@ namespace MyLab.Wpf
             
             hb.ConfigureServices((context, collection) =>
             {
-                collection.Add(_guiManagerServiceDescriptor);
-                collection.AddSingleton<IViewModelFactory, CoreViewModelFactory>();
+                var uiInvoker = CoreUiInvoker.CreateAndInitThreads(_app.Dispatcher);
+
+                collection.AddSingleton<IUiInvoker>(uiInvoker);
+                collection.AddSingleton<IDialogManager, CoreDialogManager>();
+                collection.AddSingleton<IDialogCloser, DialogManagerCloser>();
+                collection.AddSingleton<IVmFactory, CoreVmFactory>();
                 collection.AddSingleton(mainVmProvider);
                 collection.AddSingleton(_app);
                 collection.AddHostedService<GuiAppStarterService>();

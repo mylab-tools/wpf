@@ -1,74 +1,116 @@
-﻿namespace MyLab.Wpf
+﻿using System;
+using System.Linq.Expressions;
+
+namespace MyLab.Wpf
 {
-    public class DialogVm<TResult> : DialogVm
+    /// <summary>
+    /// Determines view model with dialog features
+    /// </summary>
+    public class DialogVm : ViewModel//, IVmFactoryBindable, IDialogManagerBindable
     {
-        public TResult Result { get; private set; }
+        private readonly VmCommandRegistry _commandRegistry = new VmCommandRegistry();
         
-        protected void ClosePositive(TResult result)
+        /// <summary>
+        /// Positive completion command
+        /// </summary>
+        public VmCommand OkCmd { get; }
+        /// <summary>
+        /// Negative completion command
+        /// </summary>
+        public VmCommand CancelCmd { get; }
+
+        /// <summary>
+        /// Dialog logic
+        /// </summary>
+        protected IDialogLogic DialogLogic { get; }
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="DialogVm"/>
+        /// </summary>
+        public DialogVm(IDialogLogic dialogLogic, IDialogCloser closer)
         {
-            Result = result;
-            ClosePositive();
-        }
-    }
+            if (closer == null) throw new ArgumentNullException(nameof(closer));
+            DialogLogic = dialogLogic ?? throw new ArgumentNullException(nameof(dialogLogic));
 
-    public class DialogVm : ViewModel
-    {
-        public IViewManager ViewManager { get; private set; }
-
-        public VmCommand OkCmd { get; private set; }
-        public VmCommand NoCmd { get; private set; }
-        public VmCommand CancelCmd { get; private set; }
-
-        protected void ClosePositive()
-        {
-            ViewManager.CloseView(this, true);
-        }
-
-        protected void CloseCancel()
-        {
-            ViewManager.CloseView(this, null);
-        }
-
-        protected void CloseNegative()
-        {
-            ViewManager.CloseView(this, false);
-        }
-
-        public void OnClosedPositive()
-        {
-            OnClosedPositiveCore();
-            OnClosedCore();
+            OkCmd = CreateCommand(() =>
+            {
+                dialogLogic.Ok(this);
+                closer.Close(this, true);
+            }, () => dialogLogic.CanOk(this));
+            CancelCmd = CreateCommand(() =>
+            {
+                dialogLogic.Cancel(this);
+                closer.Close(this, null);
+            }, () => dialogLogic.CanCancel(this));
         }
 
-        public void OnClosedCancel()
+        /// <summary>
+        /// Creates child view-model
+        /// </summary>
+        public T CreateChildVm<T>(IVmFactory vmFactory)
+            where T : ViewModel 
         {
-            OnClosedCancelCore();
-            OnClosedCore();
+            var vm = vmFactory.Create<T>();
+            vm.Owner = this;
+
+            return vm;
         }
 
-        public void OnClosedNegative()
+        /// <summary>
+        /// Creates child view-model
+        /// </summary>
+        public T CreateChildVm<T>(IVmFactory vmFactory, Expression<Func<T>> createExpr)
+            where T : ViewModel
         {
-            OnClosedNegativeCore();
-            OnClosedCore();
+            var vm = vmFactory.Create(createExpr);
+            vm.Owner = this;
+
+            return vm;
         }
 
-        protected virtual void OnClosedPositiveCore() { }
-        protected virtual void OnClosedCancelCore() { }
-        protected virtual void OnClosedNegativeCore() { }
-        protected virtual void OnClosedCore() { }
-
-        protected virtual bool ValidatePositiveClosing() => true;
-        protected virtual bool ValidateNegativeClosing() => true;
-        protected virtual bool ValidateCancelClosing() => true;
-
-        public override void Initialize(VmInitializationContext ctx)
+        /// <summary>
+        /// Create view-model command
+        /// </summary>
+        /// <param name="logic">command logic</param>
+        /// <returns>created view-model command</returns>
+        protected VmCommand CreateCommand(IVmCommandLogic logic)
         {
-            base.Initialize(ctx);
-            ViewManager = ctx.ViewManager;
+            if (logic == null) throw new ArgumentNullException(nameof(logic));
+            var cmd = new VmCommand(logic);
 
-            OkCmd = new VmCommand(ClosePositive, ValidatePositiveClosing);
-            NoCmd = new VmCommand(CloseNegative, ValidateNegativeClosing);
-            CancelCmd = new VmCommand(CloseCancel, ValidateCancelClosing);
+            _commandRegistry.RegisterCommand(cmd);
+
+            return cmd;
+        }
+
+        /// <summary>
+        /// Create view-model command
+        /// </summary>
+        /// <param name="act">command action logic</param>
+        /// <param name="predicate">command prediction logic</param>
+        /// <returns>created view-model command</returns>
+        protected VmCommand CreateCommand<TParam>(Action<TParam> act, Func<TParam, bool> predicate = null)
+        {
+            return CreateCommand(new ParameterizedVmCommandLogic<TParam>(act, predicate));
+        }
+
+        /// <summary>
+        /// Create view-model command
+        /// </summary>
+        /// <param name="act">command action logic</param>
+        /// <param name="predicate">command prediction logic</param>
+        /// <returns>created view-model command</returns>
+        protected VmCommand CreateCommand(Action act, Func<bool> predicate = null)
+        {
+            return CreateCommand(new ParameterlessVmCommandLogic(act, predicate));
+        }
+
+        /// <inheritdoc />
+        protected override void OnPropertyChanged(string propertyName = null)
+        {
+            base.OnPropertyChanged(propertyName);
+
+            _commandRegistry.UpdateStates();
         }
     }
 }

@@ -12,7 +12,7 @@ namespace MyLab.Wpf
         /// <summary>
         /// Adds view to view model binding
         /// </summary>
-        public static ServiceCollection AddViewBinding(this ServiceCollection srv,
+        public static IServiceCollection AddViewBinding(this IServiceCollection srv,
             Action<ViewBindingRegistrar> bindingRegistrarFunc)
         {
             if (srv == null) throw new ArgumentNullException(nameof(srv));
@@ -23,7 +23,7 @@ namespace MyLab.Wpf
 
             bindingRegistrarFunc(bindingRegistrar);
 
-            srv.AddSingleton<IViewToViewModelMap>(new CoreViewToViewModelMap(coll));
+            srv.AddSingleton<IViewToVmBindsRegistry>(new CoreViewToVmBindsRegistry(coll));
 
             return srv;
         }

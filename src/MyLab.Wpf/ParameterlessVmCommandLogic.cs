@@ -3,15 +3,15 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace MyLab.Wpf
 {
-    class ParameterlessVmCommandStrategy : IVmCommandStrategy
+    class ParameterlessVmCommandLogic : IVmCommandLogic
     {
          private readonly Action _act;
         private readonly Func<bool> _predicate;
 
         /// <summary>
-        /// Initializes a new instance of <see cref="ParameterlessVmCommandStrategy"/>
+        /// Initializes a new instance of <see cref="ParameterlessVmCommandLogic"/>
         /// </summary>
-        public ParameterlessVmCommandStrategy( Action act, Func<bool> predicate)
+        public ParameterlessVmCommandLogic( Action act, Func<bool> predicate)
         {
             _act = act ?? throw new ArgumentNullException(nameof(act));
             _predicate = predicate;

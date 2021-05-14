@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace MyLab.Wpf
 {
-    class ParameterizedVmCommandStrategy<T> : IVmCommandStrategy
+    class ParameterizedVmCommandLogic<T> : IVmCommandLogic
     {
         private readonly Action<T> _act;
         private readonly Func<T, bool> _predicate;
 
         /// <summary>
-        /// Initializes a new instance of <see cref="ParameterizedVmCommandStrategy{T}"/>
+        /// Initializes a new instance of <see cref="ParameterizedVmCommandLogic{T}"/>
         /// </summary>
-        public ParameterizedVmCommandStrategy( Action<T> act, Func<T, bool> predicate)
+        public ParameterizedVmCommandLogic( Action<T> act, Func<T, bool> predicate)
         {
             _act = act ?? throw new ArgumentNullException(nameof(act));
             _predicate = predicate;

@@ -32,21 +32,6 @@ namespace MyLab.Wpf.SequenceCalling
         {
         }
 
-        //public CallSequence<TRes> DoBiz<TRes>(Task<TRes> task, Action<Exception> uiErrorHandler)
-        //{
-        //    return new CallSequence<TRes>(
-        //        UiTaskFactory,
-        //        BizTaskFactory,
-        //        GetTaskList(new BizScheduledTask<TRes>
-        //        {
-        //            TaskCreator = () => task,
-        //            BizTaskFactory = BizTaskFactory,
-        //            UiErrorHandler = uiErrorHandler,
-        //            UiTaskFactory = UiTaskFactory
-        //        }));
-        //}
-
-
         public CallSequence<TRes> DoBiz<TRes>(Func<Task<TRes>> taskCreator, Action<Exception> uiErrorHandler)
         {
             return new CallSequence<TRes>(
