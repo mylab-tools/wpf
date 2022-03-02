@@ -2,6 +2,8 @@
 {
     public class ViewModel : UiNotifier, IVmStateUpdater
     {
+        public string Title { get; set; }
+
         public ViewModel Owner { get; set; }
 
         //public VmBusyDescription Busy { get; } = new VmBusyDescription();

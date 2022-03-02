@@ -32,10 +32,12 @@ namespace MyLab.Wpf
 
         public bool? ShowQuestion(string message, IDialogLogic logic)
         {
-            var msgVm = _vmFactory.CreateChild(_owner, () => new QuestionMessageVm());
-            msgVm.Message = message;
+            throw new NotImplementedException();
 
-            return _dialogManager.ShowDialog(msgVm);
+            //var msgVm = _vmFactory.CreateChild(_owner, () => new QuestionMessageVm());
+            //msgVm.Message = message;
+
+            //return _dialogManager.ShowDialog(msgVm);
         }
     }
 }
